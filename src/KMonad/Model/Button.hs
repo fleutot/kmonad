@@ -376,7 +376,7 @@ tapNextRelease' ms g t h mtb = onPress' t $ do
   go ms mempty
  where
   go :: MonadK m => Maybe Milliseconds -> HashSet Keycode -> m ()
-  go ms' ks = register InputHook . Hook (onTimeout <$> ms') $ \r -> do
+  go ms' ks = register InputHookPrio . Hook (onTimeout <$> ms') $ \r -> do
     p <- matchMy Release
     let e = r^.event
     let isRel = isRelease e
@@ -396,7 +396,7 @@ tapNextRelease' ms g t h mtb = onPress' t $ do
   doGrace :: MonadK m => Milliseconds -> HashSet Keycode -> m ()
   doGrace g' ks
     | null ks = doTap
-    | otherwise = tHookF InputHook g' doTap $ \r -> do
+    | otherwise = tHookF InputHookPrio g' doTap $ \r -> do
         let e = r^.event
         let g'' = g' - r^.elapsed
 
@@ -424,7 +424,7 @@ tapNextRelease' ms g t h mtb = onPress' t $ do
 -- get rolled back like a TapHold button.
 tapNextRelease :: Milliseconds -> Button -> Button -> Button
 tapNextRelease g t h = tapNextRelease' Nothing g t h Nothing
-d
+
 -- | Create a tap-hold style button that makes its decision based on the next
 -- detected release in the following manner:
 -- 1. It is the release of this button: We are tapping
